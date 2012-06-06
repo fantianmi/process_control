@@ -135,6 +135,57 @@ namespace process_control
             Console.WriteLine("按任意键停止监控");
             Console.ReadKey(true);
 
+
+
+            Console.WriteLine("--------------------获取操作系统序列号---------------------------------");
+            string result = "";
+            ManagementClass mClass = new ManagementClass("Win32_OperatingSystem");
+            ManagementObjectCollection moCollection = mClass.GetInstances();
+            foreach (ManagementObject mObject in moCollection)
+            {
+                result += mObject["SerialNumber"].ToString();
+            }
+            Console.WriteLine(result.ToString());
+            Console.WriteLine("--------------------------任意键继续----------------------------------");
+            Console.ReadKey(true);
+
+
+            Console.WriteLine("--------------------获取所有硬盘的使用情况-----------------------------");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("root/CIMV2", "SELECT * FROM Win32_LogicalDisk");
+
+
+            moCollection = searcher.Get();
+            string result2 = "";
+            foreach (ManagementObject mObject in moCollection)
+            {
+                //mObject["DriveType"]共有6中可能值，分别代表如下意义：
+                //1:No type   2:Floppy disk   3:Hard disk
+                //4:Removable drive or network drive   5:CD-ROM   6:RAM disk
+                //本处只列出固定驱动器（硬盘分区）的情况
+                if (mObject["DriveType"].ToString() == "3")
+                {
+                    result2 += string.Format("Name={0},FileSystem={1},Size={2},FreeSpace={3}\n", mObject["Name"].ToString(),
+                        mObject["FileSystem"].ToString(), mObject["Size"].ToString(), mObject["FreeSpace"].ToString());
+                    
+                }
+            }
+            Console.WriteLine(result2.ToString());
+            Console.WriteLine("--------------------------任意键继续----------------------------------");
+            Console.ReadKey(true);
+
+
+            Console.WriteLine("--------------------获取指定硬盘的使用情况----------------------------");
+            ManagementObject disk = new ManagementObject("win32_logicaldisk.deviceid=\"c:\"");
+            disk.Get();
+            Console.WriteLine("Logical Disk Size      = " + disk["Size"] + " bytes");
+            Console.WriteLine("Logical Disk FreeSpace = " + disk["FreeSpace"] + " bytes");
+            Console.WriteLine("--------------------------任意键继续----------------------------------");
+            Console.ReadKey(true);
+            
+
+
+
+
         }
 
 
